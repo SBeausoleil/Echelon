@@ -1,69 +1,86 @@
 package com.sb.echelon.services;
 
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
-import com.sb.echelon.ColType;
 import com.sb.echelon.parsers.PrimitiveParser;
 
 @Component
 public class ParserRecommander {
 	/**
-	 * key: the SQL type
+	 * key: the Java type
 	 * value: a parser to the Java type
 	 */
-	private HashMap<String, ColumnParser<?>> suggestions;
-	
+	private HashMap<Class<?>, ColumnParser<?>> suggestions;
+
 	private ParserRecommander(TypeRecommander typeRecommander) {
 		suggestions = defaultSuggestions(typeRecommander);
 	}
-	
-	protected HashMap<String, ColumnParser<?>> defaultSuggestions(TypeRecommander typeRecommander) {
-		HashMap<String, ColumnParser<?>> map = new HashMap<>();
 
-		map.put(typeRecommander.getSuggestionFor(byte.class), PrimitiveParser::parseByte);
-		map.put(typeRecommander.getSuggestionFor(Byte.class), PrimitiveParser::parseByteWrapper);
-		map.put(typeRecommander.getSuggestionFor(short.class), PrimitiveParser::parseShort);
-		map.put(typeRecommander.getSuggestionFor(Short.class), PrimitiveParser::parseShortWrapper);
-		map.put(typeRecommander.getSuggestionFor(int.class), PrimitiveParser::parseInt);
-		map.put(typeRecommander.getSuggestionFor(Integer.class), PrimitiveParser::parseInteger);
-		map.put(typeRecommander.getSuggestionFor(long.class), PrimitiveParser::parseLong);
-		map.put(typeRecommander.getSuggestionFor(Long.class), PrimitiveParser::parseLongWrapper);
-		map.put(typeRecommander.getSuggestionFor(float.class), PrimitiveParser::parseFloat);
-		map.put(typeRecommander.getSuggestionFor(Float.class), PrimitiveParser::parseFloatWrapper);
-		map.put(typeRecommander.getSuggestionFor(double.class), PrimitiveParser::parseDouble);
-		map.put(typeRecommander.getSuggestionFor(Double.class), PrimitiveParser::parseDoubleWrapper);
+	protected HashMap<Class<?>, ColumnParser<?>> defaultSuggestions(TypeRecommander typeRecommander) {
+		HashMap<Class<?>, ColumnParser<?>> map = new HashMap<>(33);
+		map.put(byte.class, PrimitiveParser::parseByte);
+		map.put(Byte.class, PrimitiveParser::parseByteWrapper);
+		map.put(short.class, PrimitiveParser::parseShort);
+		map.put(Short.class, PrimitiveParser::parseShortWrapper);
+		map.put(int.class, PrimitiveParser::parseInt);
+		map.put(Integer.class, PrimitiveParser::parseInteger);
+		map.put(long.class, PrimitiveParser::parseLong);
+		map.put(Long.class, PrimitiveParser::parseLongWrapper);
+		map.put(float.class, PrimitiveParser::parseFloat);
+		map.put(Float.class, PrimitiveParser::parseFloatWrapper);
+		map.put(double.class, PrimitiveParser::parseDouble);
+		map.put(Double.class, PrimitiveParser::parseDoubleWrapper);
 
-		map.put(typeRecommander.getSuggestionFor(char.class), PrimitiveParser::parseChar);
-		map.put(typeRecommander.getSuggestionFor(Character.class), PrimitiveParser::parseCharacter);
-		map.put(typeRecommander.getSuggestionFor(String.class), PrimitiveParser::parseString);
-		map.put(ColType.TEXT.sql, PrimitiveParser::parseString);
-		map.put(ColType.LONGTEXT.sql, PrimitiveParser::parseString);
+		map.put(char.class, PrimitiveParser::parseChar);
+		map.put(Character.class, PrimitiveParser::parseCharacter);
+		map.put(String.class, PrimitiveParser::parseString);
 
-		map.put(typeRecommander.getSuggestionFor(boolean.class), PrimitiveParser::parseBoolean);
-		map.put(typeRecommander.getSuggestionFor(Boolean.class), ColType.VARCHAR.sql);
+		map.put(boolean.class, PrimitiveParser::parseBoolean);
+		map.put(Boolean.class, PrimitiveParser::parseBooleanWrapper);
 
-		map.put(typeRecommander.getSuggestionFor(byte[].class), ColType.BLOB.sql);
-		map.put(typeRecommander.getSuggestionFor(Byte[].class), ColType.BLOB.sql);
+		map.put(byte[].class, PrimitiveParser::parseBlob);
+		map.put(Byte[].class, PrimitiveParser::parseBlob);
 
-		map.put(typeRecommander.getSuggestionFor(short[].class), ColType.JSON.sql);
-		map.put(typeRecommander.getSuggestionFor(Short[].class), ColType.JSON.sql);
-		map.put(typeRecommander.getSuggestionFor(int[].class), ColType.JSON.sql);
-		map.put(typeRecommander.getSuggestionFor(Integer[].class), ColType.JSON.sql);
-		map.put(typeRecommander.getSuggestionFor(long[].class), ColType.JSON.sql);
-		map.put(typeRecommander.getSuggestionFor(Long[].class), ColType.JSON.sql);
-		map.put(typeRecommander.getSuggestionFor(float[].class), ColType.JSON.sql);
-		map.put(typeRecommander.getSuggestionFor(Float[].class), ColType.JSON.sql);
-		map.put(typeRecommander.getSuggestionFor(double[].class), ColType.JSON.sql);
-		map.put(typeRecommander.getSuggestionFor(Double[].class), ColType.JSON.sql);
-		map.put(typeRecommander.getSuggestionFor(char[].class), ColType.VARCHAR.sql);
-		map.put(typeRecommander.getSuggestionFor(Character[].class), ColType.VARCHAR.sql);
-		map.put(typeRecommander.getSuggestionFor(String[].class), ColType.JSON.sql);
-		
+		map.put(short[].class, PrimitiveParser::parseShortJson);
+		map.put(Short[].class, PrimitiveParser::parseShortJson);
+		map.put(int[].class, PrimitiveParser::parseIntJson);
+		map.put(Integer[].class, PrimitiveParser::parseIntJson);
+		map.put(long[].class, PrimitiveParser::parseLongJson);
+		map.put(Long[].class, PrimitiveParser::parseLongJson);
+		map.put(float[].class, PrimitiveParser::parseFloatJson);
+		map.put(Float[].class, PrimitiveParser::parseFloatJson);
+		map.put(double[].class, PrimitiveParser::parseDoubleJson);
+		map.put(Double[].class, PrimitiveParser::parseDoubleJson);
+		map.put(char[].class, PrimitiveParser::parseString);
+		map.put(Character[].class, PrimitiveParser::parseCharacterJson);
+		map.put(String[].class, PrimitiveParser::parseJson);
 		return map;
+	}
+
+	/**
+	 * Get an appropriate column parser for the desired type.
+	 * @param type
+	 * @return
+	 * @throws ClassCastException
+	 *             if the parser that is associated with the given type does not
+	 *             actually support the type. Unlikely to happen if it was placed in
+	 *             the suggestions list with
+	 *             {@link #putParser(Class, ColumnParser)}.
+	 */
+	@SuppressWarnings("unchecked") // Desired risk of exception.
+	public <T> ColumnParser<T> getParserFor(Class<T> type) {
+		return (ColumnParser<T>) suggestions.get(type);
+	}
+
+	@SuppressWarnings("unchecked")
+	public <T> ColumnParser<T> putParser(Class<T> type, ColumnParser<T> parser) {
+		return (ColumnParser<T>) suggestions.put(type, parser);
+	}
+	
+	@SuppressWarnings("unchecked")
+	public <T> ColumnParser<T> putParserIfAbsent(Class<T> type, ColumnParser<T> parser) {
+		return (ColumnParser<T>) suggestions.putIfAbsent(type, parser);
 	}
 }

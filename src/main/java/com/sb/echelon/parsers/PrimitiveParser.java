@@ -1,5 +1,7 @@
 package com.sb.echelon.parsers;
 
+import java.sql.Array;
+import java.sql.SQLException;
 import java.util.LinkedHashMap;
 
 import lombok.experimental.UtilityClass;
@@ -86,9 +88,73 @@ public class PrimitiveParser {
 	public static String parseString(LinkedHashMap<String, Object> row, String colName) {
 		return (String) row.get(colName);
 	}
-	
+
 	public static boolean parseBoolean(LinkedHashMap<String, Object> row, String colName) {
 		Object val = row.getOrDefault(colName, false);
-		return (boolean) (val  != null ? val : false);
+		return (boolean) (val != null ? val : false);
+	}
+
+	public static Boolean parseBooleanWrapper(LinkedHashMap<String, Object> row, String colName) {
+		return (Boolean) row.get(colName);
+	}
+
+	public static byte[] parseBlob(LinkedHashMap<String, Object> row, String colName) {
+		return (byte[]) row.get(colName);
+	}
+
+	public static short[] parseShortJson(LinkedHashMap<String, Object> row, String colName) {
+		try {
+			return (short[]) ((Array) row.get(colName)).getArray();
+		} catch (SQLException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	public static int[] parseIntJson(LinkedHashMap<String, Object> row, String colName) {
+		try {
+			return (int[]) ((Array) row.get(colName)).getArray();
+		} catch (SQLException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	public static long[] parseLongJson(LinkedHashMap<String, Object> row, String colName) {
+		try {
+			return (long[]) ((Array) row.get(colName)).getArray();
+		} catch (SQLException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	public static float[] parseFloatJson(LinkedHashMap<String, Object> row, String colName) {
+		try {
+			return (float[]) ((Array) row.get(colName)).getArray();
+		} catch (SQLException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	public static double[] parseDoubleJson(LinkedHashMap<String, Object> row, String colName) {
+		try {
+			return (double[]) ((Array) row.get(colName)).getArray();
+		} catch (SQLException e) {
+			throw new RuntimeException(e);
+		}
+	}
+	
+	public static Character[] parseCharacterJson(LinkedHashMap<String, Object> row, String colName) {
+		try {
+			return (Character[]) ((Array) row.get(colName)).getArray();
+		} catch (SQLException e) {
+			throw new RuntimeException(e);
+		}
+	}
+	
+	public static String[] parseJson(LinkedHashMap<String, Object> row, String colName) {
+		try {
+			return (String[]) ((Array) row.get(colName)).getArray();
+		} catch (SQLException e) {
+			throw new RuntimeException(e);
+		}
 	}
 }
