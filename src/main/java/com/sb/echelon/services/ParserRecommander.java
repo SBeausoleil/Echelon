@@ -44,7 +44,7 @@ public class ParserRecommander {
 		map.put(ColType.TEXT.sql, PrimitiveParser::parseString);
 		map.put(ColType.LONGTEXT.sql, PrimitiveParser::parseString);
 
-		map.put(typeRecommander.getSuggestionFor(boolean.class), ColType.VARCHAR.sql);
+		map.put(typeRecommander.getSuggestionFor(boolean.class), PrimitiveParser::parseBoolean);
 		map.put(typeRecommander.getSuggestionFor(Boolean.class), ColType.VARCHAR.sql);
 
 		map.put(typeRecommander.getSuggestionFor(byte[].class), ColType.BLOB.sql);

@@ -1,17 +1,15 @@
 package com.sb.echelon;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class App {
 
-	private static class SubClass {
-		
-	}
-
 	public static void main(String[] args) {
-		App.SubClass a = new SubClass();
-		System.out.println(a.getClass().getSimpleName());
-		System.out.println(a.getClass().getName());
-		System.out.println(a.getClass().getCanonicalName());
-		System.out.println(a.getClass().isMemberClass());
-		System.out.println(App.class.isMemberClass());
+		Map<Integer, Object> map = new HashMap<>();
+		map.put(0, true);
+		map.put(1, null);
+		System.out.println((boolean) map.get(0));
+		System.out.println((String) map.getOrDefault(1, false));
 	}
 }
