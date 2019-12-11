@@ -5,7 +5,7 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 public enum ColType {
 	// @// @formatter:off
-	BIT, SMALLINT, TINYINT, INTEGER, BIGINT, FLOAT, DOUBLE("DOUBLE PRECISION"),
+	BIT, TINYINT, SMALLINT, INTEGER, BIGINT, FLOAT, DOUBLE("DOUBLE PRECISION"),
 	CHAR("CHAR(1)"), VARCHAR("VARCHAR(255)"), TEXT, LONGTEXT,
 	BOOLEAN,
 	DATE, TIME, TIMESTAMP,
@@ -17,14 +17,14 @@ public enum ColType {
 	ECHELON_GENERATED;
 	// @formatter:on
 
-	public final String colType;
+	public final String sql;
 
 	ColType() {
-		colType = name();
+		sql = name();
 	}
 
 	@Override
 	public String toString() {
-		return colType;
+		return sql;
 	}
 }

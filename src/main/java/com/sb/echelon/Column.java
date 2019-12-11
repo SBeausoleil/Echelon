@@ -31,5 +31,4 @@ public @interface Column {
 	 * DEFAULT: use type()
 	 */
 	String customType() default USE_TYPE;
-	
 }

@@ -16,6 +16,10 @@ public class ClassAnalyzer {
 
 	@Autowired
 	private SnakeCaseFormatter formatter;
+	@Autowired
+	private ColumnService colService;
+	@Autowired
+	private TypeRecommander typeRecommander;
 
 	public <T> AnalyzedClass<T> analyze(Class<T> clazz) {
 		String table = tableName(clazz);
@@ -26,15 +30,23 @@ public class ClassAnalyzer {
 		for (int i = 0; i < fields.length; i++) {
 			String colName = colName(fields[i]);
 			String sqlType = sqlType(fields[i]);
+			ColumnParser<?> parser = parser(fields[i]);
 		}
 		return null;
 	}
 
+	public ColumnParser<?> parser(Field field) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 	public String sqlType(Field field) {
-		String name;
 		Column annotation = field.getAnnotation(Column.class);
-		
-		return name;
+		String type = colService.columnType(annotation);
+		if (type == null) {
+			type = typeRecommander.getSuggestionFor(field.getType());
+		}
+		return type;
 	}
 
 	public String colName(Field field) {
