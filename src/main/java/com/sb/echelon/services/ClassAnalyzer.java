@@ -25,8 +25,16 @@ public class ClassAnalyzer {
 
 		for (int i = 0; i < fields.length; i++) {
 			String colName = colName(fields[i]);
+			String sqlType = sqlType(fields[i]);
 		}
 		return null;
+	}
+
+	public String sqlType(Field field) {
+		String name;
+		Column annotation = field.getAnnotation(Column.class);
+		
+		return name;
 	}
 
 	public String colName(Field field) {
