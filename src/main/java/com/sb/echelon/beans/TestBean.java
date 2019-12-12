@@ -11,4 +11,6 @@ public class TestBean {
 	@Id
 	@Column(type = ColType.BIGINT)
 	private long id;
+	
+	private String text;
 }

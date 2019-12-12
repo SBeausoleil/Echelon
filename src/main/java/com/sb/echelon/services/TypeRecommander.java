@@ -58,12 +58,12 @@ public class TypeRecommander {
 		return map;
 	}
 
-	public String putSuggestion(Class<?> forType, String suggestion) {
-		return suggestions.put(forType, suggestion);
+	public String putSuggestion(Class<?> forType, String sqlType) {
+		return suggestions.put(forType, sqlType);
 	}
 	
-	public String putSuggestionIfAbsent(Class<?> forType, String suggestion) {
-		return suggestions.putIfAbsent(forType, suggestion);
+	public String putSuggestionIfAbsent(Class<?> forType, String sqlType) {
+		return suggestions.putIfAbsent(forType, sqlType);
 	}
 	
 	public String getSuggestionFor(Class<?> type) {

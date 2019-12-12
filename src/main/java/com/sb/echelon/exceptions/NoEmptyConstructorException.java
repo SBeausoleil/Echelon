@@ -1,6 +1,6 @@
 package com.sb.echelon.exceptions;
 
-public class NoEmptyConstructorException extends RuntimeException {
+public class NoEmptyConstructorException extends RuntimeEchelonException {
 	private static final long serialVersionUID = 8830937257787148984L;
 	
 	public static final String DEFAULT_MESSAGE = "Echelon ORM requires the presence of an empty constructor.";

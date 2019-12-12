@@ -2,6 +2,7 @@ package com.sb.echelon.beans;
 
 import com.sb.echelon.services.ColumnParser;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NonNull;
 
@@ -14,6 +15,7 @@ import lombok.NonNull;
  *            the matching Java type of the column's content.
  */
 @Data
+@AllArgsConstructor
 public class ColumnDefinition<T> {
 
 	@NonNull
@@ -25,4 +27,6 @@ public class ColumnDefinition<T> {
 	@NonNull
 	private ColumnParser<T> parser;
 
+	private AnalyzedClass<T> foreign;
+	
 }

@@ -9,7 +9,9 @@ import lombok.NonNull;
 @Data
 public class AnalyzedClass<T> {
 	@NonNull
-	private Class<T> clazz;
+	private Class<T> targetClass;
+	@NonNull
+	private Field idField;
 	@NonNull
 	private LinkedHashMap<Field, ColumnDefinition<?>> fields;
 	@NonNull
