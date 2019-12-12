@@ -1,5 +1,8 @@
 package com.sb.echelon.services;
 
+import java.sql.DatabaseMetaData;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Iterator;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +15,7 @@ import com.sb.echelon.beans.ColumnDefinition.Primary;
 
 @Service
 public class TableWriter {
-
+	
 	@Autowired
 	private JdbcTemplate jdbc;
 	
@@ -37,5 +40,11 @@ public class TableWriter {
 		}
 		builder.append(" )");
 		return builder.toString();
+	}
+	
+	public boolean tableExists(AnalyzedClass<?> analyzed) throws SQLException {
+		DatabaseMetaData meta = jdbc.getDataSource().getConnection().getMetaData();
+		ResultSet rs = meta.getTables(null, null, analyzed.getTable(), null);
+		return rs.next();
 	}
 }

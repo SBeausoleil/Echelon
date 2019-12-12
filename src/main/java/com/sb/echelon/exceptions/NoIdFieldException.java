@@ -1,6 +1,6 @@
 package com.sb.echelon.exceptions;
 
-public class NoIdFieldException extends RuntimeEchelonException {
+public class NoIdFieldException extends EchelonRuntimeException {
 	private static final long serialVersionUID = -4308582206714518021L;
 	
 	public NoIdFieldException(Class<?> clazz) {

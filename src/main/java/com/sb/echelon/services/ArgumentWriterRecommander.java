@@ -4,24 +4,22 @@ import java.util.HashMap;
 
 import org.springframework.stereotype.Component;
 
-import com.sb.echelon.interpreters.ColumnParser;
 import com.sb.echelon.interpreters.PrimitiveParser;
+import com.sb.echelon.interpreters.StatementArgumentWriter;
 
 @Component
-public class ParserRecommander {
-	/**
-	 * key: the Java type
-	 * value: a parser to the Java type
-	 */
-	protected HashMap<Class<?>, ColumnParser<?>> suggestions;
+public class ArgumentWriterRecommander {
 
-	protected ParserRecommander() {
-		suggestions = defaultSuggestions();
+	protected HashMap<Class<?>, StatementArgumentWriter<?>> suggestions;
+	
+	protected ArgumentWriterRecommander() {
+		
 	}
-
-	protected HashMap<Class<?>, ColumnParser<?>> defaultSuggestions() {
-		HashMap<Class<?>, ColumnParser<?>> map = new HashMap<>(33);
-		map.put(byte.class, PrimitiveParser::parseByte);
+	
+	protected HashMap<Class<?>, StatementArgumentWriter<?>> defaultSuggestions() {
+		HashMap<Class<?>, StatementArgumentWriter<?>> map = new HashMap<>(33);
+		
+		/*map.put(byte.class, PrimitiveParser::parseByte);
 		map.put(Byte.class, PrimitiveParser::parseByteWrapper);
 		map.put(short.class, PrimitiveParser::parseShort);
 		map.put(Short.class, PrimitiveParser::parseShortWrapper);
@@ -56,32 +54,8 @@ public class ParserRecommander {
 		map.put(Double[].class, PrimitiveParser::parseDoubleJson);
 		map.put(char[].class, PrimitiveParser::parseString);
 		map.put(Character[].class, PrimitiveParser::parseCharacterJson);
-		map.put(String[].class, PrimitiveParser::parseJson);
+		map.put(String[].class, PrimitiveParser::parseJson);*/
+		
 		return map;
-	}
-
-	/**
-	 * Get an appropriate column parser for the desired type.
-	 * @param type
-	 * @return
-	 * @throws ClassCastException
-	 *             if the parser that is associated with the given type does not
-	 *             actually support the type. Unlikely to happen if it was placed in
-	 *             the suggestions list with
-	 *             {@link #putParser(Class, ColumnParser)}.
-	 */
-	@SuppressWarnings("unchecked") // Desired risk of exception.
-	public <T> ColumnParser<T> getParserFor(Class<T> type) {
-		return (ColumnParser<T>) suggestions.get(type);
-	}
-
-	@SuppressWarnings("unchecked")
-	public <T> ColumnParser<T> putParser(Class<T> type, ColumnParser<T> parser) {
-		return (ColumnParser<T>) suggestions.put(type, parser);
-	}
-	
-	@SuppressWarnings("unchecked")
-	public <T> ColumnParser<T> putParserIfAbsent(Class<T> type, ColumnParser<T> parser) {
-		return (ColumnParser<T>) suggestions.putIfAbsent(type, parser);
 	}
 }

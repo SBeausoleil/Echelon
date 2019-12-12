@@ -7,24 +7,25 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
-import com.sb.echelon.beans.TestBean;
+import com.sb.echelon.beans.TestGeneratedIdBean;
 
 @Configuration
 @ComponentScan
 public class App {
-	private static ApplicationContext applicationContext;
 	
 	@Autowired
 	private Echelon echelon;
 	
 	@Bean
 	public App springMain() {
-		TestBean bean = new TestBean("Hello world!");
+		TestGeneratedIdBean bean = new TestGeneratedIdBean("Hello world!");
+		echelon.save(bean);
 		echelon.save(bean);
 		return new App();
 	}
 	
 	public static void main(String[] args) {
-		applicationContext = new AnnotationConfigApplicationContext(App.class);
+		var applicationContext = new AnnotationConfigApplicationContext(App.class);
+		applicationContext.close();
 	}
 }

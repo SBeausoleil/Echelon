@@ -1,6 +1,6 @@
 package com.sb.echelon.beans;
 
-import com.sb.echelon.services.ColumnParser;
+import com.sb.echelon.interpreters.ColumnParser;
 
 import lombok.Data;
 import lombok.NonNull;

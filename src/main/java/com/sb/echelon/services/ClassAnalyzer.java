@@ -14,7 +14,8 @@ import com.sb.echelon.beans.AnalyzedClass;
 import com.sb.echelon.beans.ColumnDefinition;
 import com.sb.echelon.beans.ColumnDefinition.Primary;
 import com.sb.echelon.exceptions.NoIdFieldException;
-import com.sb.echelon.exceptions.RuntimeEchelonException;
+import com.sb.echelon.interpreters.ColumnParser;
+import com.sb.echelon.exceptions.EchelonRuntimeException;
 import com.sb.echelon.util.BeanUtil;
 import com.sb.echelon.util.FieldUtil;
 
@@ -48,7 +49,7 @@ public class ClassAnalyzer {
 			if (sqlType == null) {
 				foreign = attemptForeign(fields[i]);
 				if (foreign == null) {
-					throw new RuntimeEchelonException("The class analyzer does not support the type " + fields[i].getType() + " of field " + fields[i].getName() + ".");
+					throw new EchelonRuntimeException("The class analyzer does not support the type " + fields[i].getType() + " of field " + fields[i].getName() + ".");
 				} else {
 					sqlType = typeRecommander.getSuggestionFor(foreign.getIdField().getType());
 				}
