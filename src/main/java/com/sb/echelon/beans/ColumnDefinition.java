@@ -2,7 +2,6 @@ package com.sb.echelon.beans;
 
 import com.sb.echelon.services.ColumnParser;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NonNull;
 
@@ -14,9 +13,12 @@ import lombok.NonNull;
  * @param <T>
  *            the matching Java type of the column's content.
  */
+
 @Data
-@AllArgsConstructor
 public class ColumnDefinition<T> {
+	public static enum Primary {
+		NOT_PRIMARY, PRIMARY, AUTO_GENERATE;
+	};
 
 	@NonNull
 	private String name;
@@ -29,4 +31,31 @@ public class ColumnDefinition<T> {
 
 	private AnalyzedClass<T> foreign;
 	
+	private Primary primary;
+
+	public ColumnDefinition(@NonNull String name, @NonNull String sqlType, @NonNull Class<T> javaType,
+			@NonNull ColumnParser<T> parser) {
+		this(name, sqlType, javaType, parser, null, Primary.NOT_PRIMARY);
+	}
+	
+
+
+	public ColumnDefinition(@NonNull String name, @NonNull String sqlType, @NonNull Class<T> javaType,
+			@NonNull ColumnParser<T> parser, AnalyzedClass<T> foreign) {
+		this(name, sqlType, javaType, parser, foreign, Primary.NOT_PRIMARY);
+	}
+
+	public ColumnDefinition(@NonNull String name, @NonNull String sqlType, @NonNull Class<T> javaType,
+			@NonNull ColumnParser<T> parser, AnalyzedClass<T> foreign, Primary primary) {
+		this.name = name;
+		this.sqlType = sqlType;
+		this.javaType = javaType;
+		this.parser = parser;
+		this.foreign = foreign;
+		this.primary = primary;
+	}
+
+	public boolean isPrimary() {
+		return primary == Primary.PRIMARY || primary == Primary.AUTO_GENERATE;
+	}
 }

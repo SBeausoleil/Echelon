@@ -12,6 +12,7 @@ import com.sb.echelon.Id;
 import com.sb.echelon.Table;
 import com.sb.echelon.beans.AnalyzedClass;
 import com.sb.echelon.beans.ColumnDefinition;
+import com.sb.echelon.beans.ColumnDefinition.Primary;
 import com.sb.echelon.exceptions.NoIdFieldException;
 import com.sb.echelon.exceptions.RuntimeEchelonException;
 import com.sb.echelon.util.BeanUtil;
@@ -29,7 +30,7 @@ public class ClassAnalyzer {
 	@Autowired
 	private ParserRecommander parserRecommander;
 
-	@SuppressWarnings("rawtypes")
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public <T> AnalyzedClass<T> analyze(Class<T> clazz) {
 		String table = tableName(clazz);
 
@@ -39,6 +40,7 @@ public class ClassAnalyzer {
 			throw new NoIdFieldException(clazz);
 
 		LinkedHashMap<Field, ColumnDefinition<?>> cols = new LinkedHashMap<>(fields.length);
+		cols.put(null, AnalyzedClass.CLASS_COLUMN);
 		for (int i = 0; i < fields.length; i++) {
 			String colName = colName(fields[i]);
 			String sqlType = sqlType(fields[i]);
@@ -52,10 +54,22 @@ public class ClassAnalyzer {
 				}
 			}
 			ColumnParser<?> parser = parserRecommander.getParserFor(fields[i].getType());
-			cols.put(fields[i], new ColumnDefinition(colName, sqlType, fields[i].getType(), parser, foreign));
+			ColumnDefinition definition = new ColumnDefinition(colName, sqlType, fields[i].getType(), parser, foreign);
+			if (fields[i] == idField) {
+				definition.setPrimary(primary(idField));
+			}
+			cols.put(fields[i], definition);
 		}
 
 		return new AnalyzedClass<>(clazz, idField, cols, table);
+	}
+	
+	private Primary primary(Field idField) {
+		var primary = Primary.PRIMARY;
+		Id annotation = idField.getAnnotation(Id.class);
+		if (annotation != null && annotation.autoGenerate())
+			primary = Primary.AUTO_GENERATE;
+		return primary;
 	}
 
 	private AnalyzedClass<?> attemptForeign(Field field) {

@@ -1,6 +1,7 @@
 package com.sb.echelon;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +13,7 @@ import com.sb.echelon.exceptions.NoIdFieldException;
 import com.sb.echelon.services.ClassAnalyzer;
 import com.sb.echelon.services.ColumnParser;
 import com.sb.echelon.services.ParserRecommander;
+import com.sb.echelon.services.TableWriter;
 import com.sb.echelon.services.TypeRecommander;
 
 /**
@@ -30,8 +32,11 @@ public final class Echelon {
 	private TypeRecommander typeRecommander;
 	@Autowired
 	private ParserRecommander parserRecommander;
+	@Autowired
+	private TableWriter tableWriter;
 	
 	private Map<Class<?>, AnalyzedClass<?>> analyzedClasses = new HashMap<>();
+	private HashSet<AnalyzedClass<?>> tableCreated = new HashSet<>();
 	
 	public boolean hasAnalyzed(Class<?> clazz) {
 		return analyzedClasses.containsKey(clazz);
@@ -81,5 +86,20 @@ public final class Echelon {
 
 	public <T> ColumnParser<T> putParserIfAbsent(Class<T> type, ColumnParser<T> parser) {
 		return parserRecommander.putParserIfAbsent(type, parser);
+	}
+	
+	@SuppressWarnings("unchecked")
+	public <T> T save(T obj) {
+		AnalyzedClass<T> analyzed = (AnalyzedClass<T>) analyzedClasses.get(obj.getClass());
+		if (analyzed == null)
+			analyzed = (AnalyzedClass<T>) analyze(obj.getClass());
+		if (!tableCreated.contains(analyzed))
+			writeTable(analyzed);
+		
+		return obj;
+	}
+
+	protected void writeTable(AnalyzedClass<?> analyzed) {
+		tableWriter.writeTable(analyzed);
 	}
 }

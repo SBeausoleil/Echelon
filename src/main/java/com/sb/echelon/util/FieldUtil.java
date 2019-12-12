@@ -4,6 +4,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.function.Function;
 
 import lombok.NonNull;
@@ -17,14 +18,18 @@ public class FieldUtil {
 	}
 
 	public static Field[] getFields(@NonNull Class<?> target, Function<Field, Boolean> shouldIgnore) {
-		ArrayList<Field> fields = new ArrayList<>();
+		var hierarchy = new LinkedList<Class<?>>();
 		while (target != null) {
-			for (Field field : target.getDeclaredFields())
-				if (!Modifier.isStatic(field.getModifiers()) && !shouldIgnore.apply(field))
-					fields.add(field);
+			hierarchy.addFirst(target);
 			target = target.getSuperclass();
 		}
-		Collections.reverse(fields); // Get the super class fields before the subclass fields
+
+		var fields = new ArrayList<Field>();
+		for (Class<?> current : hierarchy) {
+			for (Field field : current.getDeclaredFields())
+				if (!Modifier.isStatic(field.getModifiers()) && !shouldIgnore.apply(field))
+					fields.add(field);
+		}
 		return fields.toArray(new Field[fields.size()]);
 	}
 

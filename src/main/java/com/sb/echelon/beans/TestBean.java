@@ -5,7 +5,10 @@ import com.sb.echelon.Column;
 import com.sb.echelon.Id;
 import com.sb.echelon.Table;
 
+import lombok.NoArgsConstructor;
+
 @Table(name = "test_beans")
+@NoArgsConstructor
 public class TestBean {
 
 	@Id
@@ -13,4 +16,10 @@ public class TestBean {
 	private long id;
 	
 	private String text;
+
+	public TestBean(String text) {
+		this.text = text;
+	}
+	
+	
 }

@@ -19,17 +19,12 @@ public class App {
 	
 	@Bean
 	public App springMain() {
-		System.out.println("In springMain()");
-		System.out.println(echelon.analyze(TestBean.class));
+		TestBean bean = new TestBean("Hello world!");
+		echelon.save(bean);
 		return new App();
 	}
 	
 	public static void main(String[] args) {
-		System.out.println("Starting");
 		applicationContext = new AnnotationConfigApplicationContext(App.class);
-		
-		for (String beanName : applicationContext.getBeanDefinitionNames()) {
-            System.out.println(beanName);
-        }
 	}
 }
