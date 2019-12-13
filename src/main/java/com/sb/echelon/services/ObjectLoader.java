@@ -32,7 +32,6 @@ public class ObjectLoader {
 				return null;
 		} else {
 			String sql = makeComplexQuery(analyzed, id);
-			System.out.println(sql);
 			ArrayList<LinkedHashMap<String, Object>[]> rs = jdbc.query(sql, new Object[] { id },
 					ResultSetUtil::convertToMapsList);
 			ResultSetUtil.printMapsList(rs);
@@ -53,5 +52,14 @@ public class ObjectLoader {
 				});
 		builder.append(" WHERE `" + analyzed.getTable() + "`.`" + analyzed.getIdCol().getName() + "` = ?");
 		return builder.toString();
+	}
+
+	public <T> ArrayList<T> loadFromRaw(String sql, Object[] args, AnalyzedClass<T> analyzed) {
+		ArrayList<LinkedHashMap<String, Object>[]> rs = jdbc.query(sql, args, ResultSetUtil::convertToMapsList);
+		ResultSetUtil.printMapsList(rs);
+		ArrayList<T> parsed = new ArrayList<>();
+		for (LinkedHashMap<String, Object>[] row : rs)
+			parsed.add(interpreter.parse(row, analyzed));
+		return parsed;
 	}
 }

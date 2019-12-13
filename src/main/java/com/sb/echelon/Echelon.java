@@ -1,6 +1,7 @@
 package com.sb.echelon;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -117,5 +118,9 @@ public final class Echelon {
 
 	protected void writeTable(AnalyzedClass<?> analyzed) {
 		tableWriter.writeTable(analyzed);
+	}
+	
+	public <T> ArrayList<T> loadRaw(String sql, Object[] args, Class<T> target) {
+		return loader.loadFromRaw(sql, args, (AnalyzedClass<T>) analyze(target));
 	}
 }

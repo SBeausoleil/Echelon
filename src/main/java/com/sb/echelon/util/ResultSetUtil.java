@@ -31,7 +31,7 @@ public class ResultSetUtil {
 
 				map.put(meta.getColumnName(i), rs.getObject(i));
 			}
-			list.add(completeRow.toArray(new LinkedHashMap[list.size()]));
+			list.add(completeRow.toArray(new LinkedHashMap[completeRow.size()]));
 		}
 		return list;
 	}

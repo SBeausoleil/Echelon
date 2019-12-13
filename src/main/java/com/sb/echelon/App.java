@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
+import com.sb.echelon.beans.AnalyzedClass;
 import com.sb.echelon.beans.TestGeneratedIdBean;
 import com.sb.echelon.test.ArraysBean;
 import com.sb.echelon.test.Owner;
@@ -42,7 +43,8 @@ public class App {
 	private void run() {
 		TestGeneratedIdBean bean = new TestGeneratedIdBean("Hello world!", 19);
 		echelon.save(bean);
-		bean.setText("A new world awaits us.");
+		final String TEXT = "A new world awaits us.";
+		bean.setText(TEXT);
 		echelon.save(bean);
 		System.out.println(bean);
 		TestGeneratedIdBean loaded = echelon.load(TestGeneratedIdBean.class, bean.getId());
@@ -60,6 +62,12 @@ public class App {
 		System.out.println(echelon.save(owner));
 		System.out.println(owner.getPossession());
 		System.out.println(echelon.load(Owner.class, owner.getId()));
+		
+		
+		AnalyzedClass<TestGeneratedIdBean> analyzed = (AnalyzedClass<TestGeneratedIdBean>) echelon.getAnalyzed(TestGeneratedIdBean.class);
+		String sql = "SELECT * FROM " + analyzed.getTable() + " WHERE text = ?";
+		TestGeneratedIdBean loadedFromRaw = echelon.loadRaw(sql, new Object[] { TEXT }, TestGeneratedIdBean.class).get(0);
+		System.out.println(loadedFromRaw);
 	}
 
 	public static void main(String[] args) {
