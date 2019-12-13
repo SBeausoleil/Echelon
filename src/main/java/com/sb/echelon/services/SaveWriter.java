@@ -62,7 +62,6 @@ public class SaveWriter {
 			PreparedStatement ps = connection.prepareStatement(sql);
 			var setter = new ArgumentPreparedStatementSetter(args);
 			setter.setValues(ps);
-			System.out.println(ps.toString());
 			return ps;
 		});
 	}

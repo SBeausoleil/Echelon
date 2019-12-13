@@ -42,6 +42,8 @@ public class AnalyzedClass<T> {
 
 	@Getter(AccessLevel.NONE)
 	private transient final boolean USE_AUTO_GENERATION;
+	@Getter(AccessLevel.NONE)
+	private transient boolean hasRelations;
 
 	@SuppressWarnings("unchecked")
 	public AnalyzedClass(@NonNull Class<T> targetClass, @NonNull Field idField,
@@ -61,14 +63,22 @@ public class AnalyzedClass<T> {
 		USE_AUTO_GENERATION = idCol.getPrimary() == Primary.AUTO_GENERATE;
 		
 		fieldsByColName = new LinkedHashMap<>(fields.size());
+		this.hasRelations = false;
 		fields.entrySet().forEach(entry -> {
 			if (entry.getKey() != null)
 				entry.getKey().setAccessible(true);
+			if (entry.getValue().isForeign())
+				this.hasRelations = true;
 			fieldsByColName.put(entry.getValue().getName(), entry);
 		});
+		
 	}
 
 	public boolean useAutoGeneration() {
 		return USE_AUTO_GENERATION;
+	}
+	
+	public boolean hasRelations() {
+		return hasRelations;
 	}
 }

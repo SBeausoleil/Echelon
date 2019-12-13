@@ -59,6 +59,7 @@ public class App {
 		var owner = new Owner(10212.91f, new Possessed("Inventory"));
 		System.out.println(echelon.save(owner));
 		System.out.println(owner.getPossession());
+		System.out.println(echelon.load(Owner.class, owner.getId()));
 	}
 
 	public static void main(String[] args) {

@@ -44,6 +44,7 @@ public class ResultSetUtil {
 				for (Entry<String, Object> entry : clazz.entrySet()) {
 					System.out.print(": " + entry.getKey() + " = " + entry.getValue());
 				}
+				System.out.println();
 			}
 			System.out.println();
 		}

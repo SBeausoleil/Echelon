@@ -4,9 +4,11 @@ import com.sb.echelon.Id;
 import com.sb.echelon.Table;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Table
 @Data
+@NoArgsConstructor
 public class Owner {
 
 	@Id(autoGenerate = true)
