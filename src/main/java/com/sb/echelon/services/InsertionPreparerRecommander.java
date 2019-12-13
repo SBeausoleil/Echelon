@@ -21,6 +21,7 @@ public class InsertionPreparerRecommander {
 		HashMap<Class<?>, SqlInsertionPreparer<?>> map = new HashMap<>();
 		map.put(char.class, CommonPreparers::prepareChar);
 		map.put(Character.class, CommonPreparers::prepareCharWrapper);
+		map.put(String[].class, CommonPreparers::toJson);
 		return map;
 	}
 

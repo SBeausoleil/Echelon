@@ -4,6 +4,9 @@ import java.sql.Array;
 import java.sql.SQLException;
 import java.util.LinkedHashMap;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import lombok.experimental.UtilityClass;
 
 @UtilityClass
@@ -150,10 +153,10 @@ public class PrimitiveParser {
 		}
 	}
 	
-	public static String[] parseJson(LinkedHashMap<String, Object> row, String colName) {
+	public static String[] parseStringJson(LinkedHashMap<String, Object> row, String colName) {
 		try {
-			return (String[]) ((Array) row.get(colName)).getArray();
-		} catch (SQLException e) {
+			return new ObjectMapper().readValue((String) row.get(colName), String[].class);
+		} catch (JsonProcessingException e) {
 			throw new RuntimeException(e);
 		}
 	}

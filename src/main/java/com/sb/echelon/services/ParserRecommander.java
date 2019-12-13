@@ -56,7 +56,7 @@ public class ParserRecommander {
 		map.put(Double[].class, PrimitiveParser::parseDoubleJson);
 		map.put(char[].class, PrimitiveParser::parseString);
 		map.put(Character[].class, PrimitiveParser::parseCharacterJson);
-		map.put(String[].class, PrimitiveParser::parseJson);
+		map.put(String[].class, PrimitiveParser::parseStringJson);
 		return map;
 	}
 
