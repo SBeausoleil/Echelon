@@ -1,12 +1,19 @@
 package com.sb.echelon.interpreters;
 
+import org.springframework.stereotype.Component;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sb.echelon.Echelon;
 
-import lombok.experimental.UtilityClass;
-
-@UtilityClass
+@Component
 public class CommonPreparers {
+	
+	private static Echelon echelon;
+	
+	private CommonPreparers(Echelon echelon) {
+		CommonPreparers.echelon = echelon;
+	}
 
 	public static Object prepareChar(Object c) {
 		char character = (char) c;
@@ -22,6 +29,15 @@ public class CommonPreparers {
 		try {
 			return new ObjectMapper().writer().writeValueAsString(obj);
 		} catch (JsonProcessingException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	public static long toForeignId(Object foreign) {
+		foreign = echelon.save(foreign);
+		try {
+			return (long) echelon.getAnalyzed(foreign.getClass()).getIdField().get(foreign);
+		} catch (IllegalArgumentException | IllegalAccessException e) {
 			throw new RuntimeException(e);
 		}
 	}

@@ -29,7 +29,7 @@ public class ColumnDefinition<T> {
 	private String sqlType;
 	@NonNull
 	private Class<T> javaType;
-	@NonNull
+	
 	private ColumnParser<T> parser;
 
 	private AnalyzedClass<T> foreign;
@@ -45,19 +45,23 @@ public class ColumnDefinition<T> {
 	}
 
 	public ColumnDefinition(@NonNull String name, @NonNull String sqlType, @NonNull Class<T> javaType,
-			@NonNull ColumnParser<T> parser, AnalyzedClass<T> foreign) {
+			ColumnParser<T> parser, AnalyzedClass<T> foreign) {
 		this(name, sqlType, javaType, parser, foreign, null, Primary.NOT_PRIMARY);
 	}
 
 	public ColumnDefinition(@NonNull String name, @NonNull String sqlType, @NonNull Class<T> javaType,
-			@NonNull ColumnParser<T> parser, AnalyzedClass<T> foreign,
+			ColumnParser<T> parser, AnalyzedClass<T> foreign,
 			SqlInsertionPreparer<T> preparer) {
 		this(name, sqlType, javaType, parser, foreign, preparer, Primary.NOT_PRIMARY);
 	}
 
 	public ColumnDefinition(@NonNull String name, @NonNull String sqlType, @NonNull Class<T> javaType,
-			@NonNull ColumnParser<T> parser, AnalyzedClass<T> foreign, SqlInsertionPreparer<T> preparer,
+			ColumnParser<T> parser, AnalyzedClass<T> foreign, SqlInsertionPreparer<T> preparer,
 			Primary primary) {
+		
+		if (parser == null && foreign == null)
+			throw new NullPointerException("parser may only be null for a column with a foreign value");
+		
 		this.name = name;
 		this.sqlType = sqlType;
 		this.javaType = javaType;
@@ -73,5 +77,9 @@ public class ColumnDefinition<T> {
 	
 	public boolean hasPreparer() {
 		return preparer != null;
+	}
+	
+	public boolean isForeign() {
+		return foreign != null;
 	}
 }

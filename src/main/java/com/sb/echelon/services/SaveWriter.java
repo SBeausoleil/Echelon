@@ -109,25 +109,20 @@ public class SaveWriter {
 		return args;
 	}
 
-	/**
-	 * @param <T>
-	 * @param analyzed
-	 * @param obj
-	 * @param args
-	 * @param i
-	 * @param entry
-	 * @throws IllegalAccessException
-	 */
-	public <T> void enterArgument(AnalyzedClass<T> analyzed, T obj, Object[] args, int i,
+	public <T> void enterArgument(AnalyzedClass<T> analyzed, T obj, Object[] args, int index,
 			Entry<Field, ColumnDefinition<?>> entry) throws IllegalAccessException {
 		if (entry.getKey() != null) {
+			if (entry.getValue().isForeign()) {
+				save(entry.getKey().get(obj), (AnalyzedClass<Object>) entry.getValue().getForeign());
+			}
+				
 			if (!entry.getValue().hasPreparer()) {
-				args[i] = entry.getKey().get(obj);
+				args[index] = entry.getKey().get(obj);
 			} else {
-				args[i] = entry.getValue().getPreparer().prepare(entry.getKey().get(obj));
+				args[index] = entry.getValue().getPreparer().prepare(entry.getKey().get(obj));
 			}
 		} else
-			args[i] = analyzed.getTargetClass().getName();
+			args[index] = analyzed.getTargetClass().getName();
 	}
 
 	/**

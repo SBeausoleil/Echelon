@@ -15,6 +15,7 @@ import com.sb.echelon.beans.ColumnDefinition;
 import com.sb.echelon.beans.ColumnDefinition.Primary;
 import com.sb.echelon.exceptions.NoIdFieldException;
 import com.sb.echelon.interpreters.ColumnParser;
+import com.sb.echelon.interpreters.CommonPreparers;
 import com.sb.echelon.interpreters.SqlInsertionPreparer;
 import com.sb.echelon.exceptions.EchelonRuntimeException;
 import com.sb.echelon.util.BeanUtil;
@@ -37,6 +38,8 @@ public class ClassAnalyzer {
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public <T> AnalyzedClass<T> analyze(Class<T> clazz) {
 		String table = tableName(clazz);
+		if (!table.endsWith("s"))
+			table += "s";
 
 		Field[] fields = FieldUtil.getFields(clazz, FieldUtil::isTransient);
 		Field idField = findIdField(fields);
@@ -58,7 +61,7 @@ public class ClassAnalyzer {
 				}
 			}
 			ColumnParser<?> parser = parserRecommander.getParserFor(fields[i].getType());
-			SqlInsertionPreparer<?> preparer = preparerRecommander.getParserFor(fields[i].getType());
+			SqlInsertionPreparer<?> preparer = foreign == null ? preparerRecommander.getParserFor(fields[i].getType()) : CommonPreparers::toForeignId;
 			ColumnDefinition definition = new ColumnDefinition(colName, sqlType, fields[i].getType(), parser, foreign, preparer);
 			if (fields[i] == idField) {
 				definition.setPrimary(primary(idField));
@@ -92,7 +95,7 @@ public class ClassAnalyzer {
 						e);
 			}
 		}
-		return null;
+		return analyzed;
 	}
 
 	public String sqlType(Field field) {

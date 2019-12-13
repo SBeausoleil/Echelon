@@ -8,6 +8,8 @@ import org.springframework.context.annotation.Configuration;
 
 import com.sb.echelon.beans.TestGeneratedIdBean;
 import com.sb.echelon.test.ArraysBean;
+import com.sb.echelon.test.Owner;
+import com.sb.echelon.test.Possessed;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -53,6 +55,10 @@ public class App {
 		var arrays = new ArraysBean(0l, new short[] { 4, 5, 12 }, new Short[] { 99 }, new boolean[] {true, true, false, true});
 		System.out.println(echelon.save(arrays));
 		System.out.println(echelon.load(ArraysBean.class, arrays.getId()));
+		
+		var owner = new Owner(10212.91f, new Possessed("Inventory"));
+		System.out.println(echelon.save(owner));
+		System.out.println(owner.getPossession());
 	}
 
 	public static void main(String[] args) {

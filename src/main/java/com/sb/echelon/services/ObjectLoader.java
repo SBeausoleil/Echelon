@@ -20,10 +20,11 @@ public class ObjectLoader {
 	private ObjectInterpreter interpreter;
 
 	public <T> T load(AnalyzedClass<T> analyzed, long id) {
-		ArrayList<LinkedHashMap<String, Object>> rs = jdbc.query(
+		ArrayList<LinkedHashMap<String, Object>[]> rs = jdbc.query(
 				"SELECT * FROM " + analyzed.getTable() + " WHERE " + analyzed.getIdCol().getName() + " = ?",
 				new Object[] { id }, ResultSetUtil::convertToMapsList);
 		ResultSetUtil.printMapsList(rs);
-		return interpreter.parse(rs.get(0), analyzed);
+		//return interpreter.parse(rs.get(0), analyzed);
+		return null;
 	}
 }

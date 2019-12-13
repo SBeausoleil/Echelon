@@ -6,12 +6,12 @@ import java.util.function.BiFunction;
 import org.springframework.lang.Nullable;
 
 @FunctionalInterface
-public interface ColumnParser<R> extends BiFunction<LinkedHashMap<String, Object>, String, R> {
+public interface ColumnParser<T> extends BiFunction<LinkedHashMap<String, Object>, String, T> {
 
-	R parse(LinkedHashMap<String, Object> row, String colName);
+	T parse(LinkedHashMap<String, Object> rowFragment, String colName);
 	
 	@Override
-	default @Nullable R apply(LinkedHashMap<String, Object> row, String colName) {
-		return parse(row, colName);
+	default @Nullable T apply(LinkedHashMap<String, Object> rowFragment, String colName) {
+		return parse(rowFragment, colName);
 	}
 }
