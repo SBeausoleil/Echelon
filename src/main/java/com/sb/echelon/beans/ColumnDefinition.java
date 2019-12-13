@@ -2,6 +2,7 @@ package com.sb.echelon.beans;
 
 import org.springframework.lang.Nullable;
 
+import com.sb.echelon.exceptions.EchelonRuntimeException;
 import com.sb.echelon.interpreters.ColumnParser;
 import com.sb.echelon.interpreters.SqlInsertionPreparer;
 
@@ -35,6 +36,8 @@ public class ColumnDefinition<T> {
 	private AnalyzedClass<T> foreign;
 
 	private Primary primary;
+	
+	private boolean isPolymorphic;
 
 	@Nullable
 	private SqlInsertionPreparer<T> preparer;
@@ -69,6 +72,7 @@ public class ColumnDefinition<T> {
 		this.foreign = foreign;
 		this.preparer = preparer;
 		this.primary = primary;
+		this.isPolymorphic = false;
 	}
 
 	public boolean isPrimary() {
@@ -81,5 +85,17 @@ public class ColumnDefinition<T> {
 	
 	public boolean isForeign() {
 		return foreign != null;
+	}
+	
+	public void setPolymorphic(boolean isPolymorphic) {
+		if (isPolymorphic && foreign != null)
+			throw new EchelonRuntimeException("A field may not be both polymorphic and a foreign key.");
+		this.isPolymorphic = isPolymorphic;
+	}
+	
+	public String polymorphicTypeColName() {
+		if (isPolymorphic)
+			return name + "_type";
+		return null;
 	}
 }

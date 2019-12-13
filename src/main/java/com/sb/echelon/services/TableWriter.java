@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
+import com.sb.echelon.ColType;
 import com.sb.echelon.ForeignKey;
 import com.sb.echelon.beans.AnalyzedClass;
 import com.sb.echelon.beans.ColumnDefinition;
@@ -42,11 +43,15 @@ public class TableWriter {
 			ColumnDefinition<?> col = i.next();
 			builder.append(col.getName() + " ");
 			builder.append(col.getSqlType());
+			
 			if (col.isPrimary()) {
 				if (col.getPrimary() == Primary.AUTO_GENERATE)
 					builder.append(" AUTO_INCREMENT");
 				builder.append(" PRIMARY KEY");
 			}
+			
+			if (col.isPolymorphic())
+				builder.append(", " + col.polymorphicTypeColName() + " " + ColType.VARCHAR.sql);
 			if (i.hasNext())
 				builder.append(", ");
 		}

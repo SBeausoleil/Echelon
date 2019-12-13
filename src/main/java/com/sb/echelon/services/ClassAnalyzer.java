@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import com.sb.echelon.Column;
 import com.sb.echelon.Echelon;
+import com.sb.echelon.ForeignKey;
 import com.sb.echelon.Id;
 import com.sb.echelon.Table;
 import com.sb.echelon.beans.AnalyzedClass;
@@ -52,17 +53,25 @@ public class ClassAnalyzer {
 			String colName = colName(fields[i]);
 			String sqlType = sqlType(fields[i]);
 			AnalyzedClass<?> foreign = null;
+			boolean isPolymorphic = false;
 			if (sqlType == null) {
-				foreign = attemptForeign(fields[i]);
-				if (foreign == null) {
-					throw new EchelonRuntimeException("The class analyzer does not support the type " + fields[i].getType() + " of field " + fields[i].getName() + ".");
-				} else {
-					sqlType = typeRecommander.getSuggestionFor(foreign.getIdField().getType());
+				isPolymorphic = checkIsPolymorphic(fields[i]);
+				if (!isPolymorphic) {
+					foreign = attemptForeign(fields[i]);
+					if (foreign == null) {
+						throw new EchelonRuntimeException("The class analyzer does not support the type "
+								+ fields[i].getType() + " of field " + fields[i].getName() + ".");
+					}
 				}
+				sqlType = typeRecommander.getSuggestionFor(long.class);
 			}
 			ColumnParser<?> parser = parserRecommander.getParserFor(fields[i].getType());
-			SqlInsertionPreparer<?> preparer = foreign == null ? preparerRecommander.getPreparerFor(fields[i].getType()) : CommonPreparers::toForeignId;
-			ColumnDefinition definition = new ColumnDefinition(colName, sqlType, fields[i].getType(), parser, foreign, preparer);
+			SqlInsertionPreparer<?> preparer = foreign == null && !isPolymorphic
+					? preparerRecommander.getPreparerFor(fields[i].getType())
+					: CommonPreparers::toForeignId;
+			ColumnDefinition definition = new ColumnDefinition(colName, sqlType, fields[i].getType(), parser, foreign,
+					preparer);
+			definition.setPolymorphic(isPolymorphic);
 			if (fields[i] == idField) {
 				definition.setPrimary(primary(idField));
 			}
@@ -71,7 +80,12 @@ public class ClassAnalyzer {
 
 		return new AnalyzedClass<>(clazz, idField, cols, table);
 	}
-	
+
+	private boolean checkIsPolymorphic(Field field) {
+		ForeignKey annotation = field.getAnnotation(ForeignKey.class);
+		return annotation != null && annotation.isPolymorphic();
+	}
+
 	private Primary primary(Field idField) {
 		var primary = Primary.PRIMARY;
 		Id annotation = idField.getAnnotation(Id.class);
@@ -87,12 +101,10 @@ public class ClassAnalyzer {
 			try {
 				analyzed = echelon.analyze(field.getType());
 			} catch (NoIdFieldException e) {
-				throw new NoIdFieldException(
-						"The class " + field.getDeclaringClass().getName() + " member field " + field.getName()
-								+ " references a class that is not supported by Echelon."
-								+ " You may fix this by either registering your own AnalyzedClass with Echelon"
-								+ " and/or by registering a suggested SQL type with Echelon for the vexating type.",
-						e);
+				throw new NoIdFieldException("The class " + field.getDeclaringClass().getName() + " member field "
+						+ field.getName() + " references a class that is not supported by Echelon."
+						+ " You may fix this by either registering your own AnalyzedClass with Echelon"
+						+ " and/or by registering a suggested SQL type with Echelon for the vexating type.", e);
 			}
 		}
 		return analyzed;
@@ -101,7 +113,9 @@ public class ClassAnalyzer {
 	public String sqlType(Field field) {
 		Column annotation = field.getAnnotation(Column.class);
 		String type = colService.columnType(annotation);
-		if (type == null) { type = typeRecommander.getSuggestionFor(field.getType()); }
+		if (type == null) {
+			type = typeRecommander.getSuggestionFor(field.getType());
+		}
 		return type;
 	}
 
@@ -141,7 +155,9 @@ public class ClassAnalyzer {
 		Table annotation = clazz.getAnnotation(Table.class);
 		if (annotation != null) {
 			name = annotation.name();
-			if (name.equals(Table.GENERATE_TABLE_NAME)) { name = formatter.format(clazz.getSimpleName()); }
+			if (name.equals(Table.GENERATE_TABLE_NAME)) {
+				name = formatter.format(clazz.getSimpleName());
+			}
 		} else {
 			throw new IllegalArgumentException("The class " + clazz.getCanonicalName()
 					+ " does not have the @Table annotation and thus is not recognized as an Echelon-compatible entity.");

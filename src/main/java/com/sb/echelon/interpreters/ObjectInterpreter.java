@@ -9,39 +9,16 @@ import java.util.Map;
 
 import org.springframework.stereotype.Service;
 
+import com.sb.echelon.Echelon;
 import com.sb.echelon.beans.AnalyzedClass;
 import com.sb.echelon.beans.ColumnDefinition;
 import com.sb.echelon.exceptions.EchelonRuntimeException;
 import com.sb.echelon.exceptions.NoEmptyConstructorException;
+import com.sb.echelon.util.BeanUtil;
 
 @Service
 public class ObjectInterpreter {
 
-	public <T> T parse(LinkedHashMap<String, Object> resultRow, AnalyzedClass<T> analyzed) {
-		Iterator<Map.Entry<String, Object>> i = resultRow.entrySet().iterator();
-		sanityCheck(analyzed, i);
-
-		T loaded;
-		try {
-			loaded = analyzed.getTargetClass().getDeclaredConstructor().newInstance();
-		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
-				| NoSuchMethodException | SecurityException e) {
-			throw new NoEmptyConstructorException(e);
-		}
-
-		try {
-			while (i.hasNext()) {
-				Map.Entry<String, Object> col = i.next();
-				Map.Entry<Field, ColumnDefinition<?>> definition = analyzed.getFieldsByColName().get(col.getKey());
-				definition.getKey().set(loaded, definition.getValue().getParser().parse(resultRow, col.getKey()));
-			}
-		} catch (IllegalArgumentException | IllegalAccessException e) {
-			throw new RuntimeException(e);
-		}
-
-		return loaded;
-	}
-	
 	public <T> T parse(LinkedHashMap<String, Object>[] resultRow, AnalyzedClass<T> analyzed) {
 		return parse(resultRow, analyzed, null, 0);
 	}
@@ -67,12 +44,24 @@ public class ObjectInterpreter {
 		try {
 			while (i.hasNext()) {
 				Map.Entry<String, Object> entry = i.next();
+				if (entry.getValue() == null)
+					continue;
+
 				Map.Entry<Field, ColumnDefinition<?>> definition = analyzed.getFieldsByColName().get(entry.getKey());
 				if (definition.getValue().getParser() != null)
 					definition.getKey().set(loaded,
 							definition.getValue().getParser().parse(rowFragment, entry.getKey()));
 				else if (definition.getValue().isForeign()) {
 					handleForeignRelation(resultRow, previous, loaded, entry, definition);
+				} else if (definition.getValue().isPolymorphic()) {
+					long idForeign = (long) entry.getValue();
+					String type = (String) rowFragment.get(definition.getValue().polymorphicTypeColName());
+					if (type == null)
+						throw new EchelonRuntimeException("Error: the field " + definition.getKey().getName()
+								+ " is polymorphic, yet there is no identifier for the type of the linked object.");
+					Echelon echelon =  BeanUtil.getBean(Echelon.class);
+					AnalyzedClass<?> polymorphicInstance = echelon.analyze(type);
+					definition.getKey().set(loaded, echelon.load(polymorphicInstance.getTargetClass(), idForeign));
 				} else
 					throw new IllegalStateException("The column definition " + definition.getValue().getName()
 							+ " of type " + analyzed.getTargetClass().getName()
@@ -80,6 +69,8 @@ public class ObjectInterpreter {
 			}
 		} catch (IllegalArgumentException | IllegalAccessException e) {
 			throw new RuntimeException(e);
+		} catch (ClassNotFoundException e) {
+			throw new RuntimeException("The class pointed to by a polymorphic field could not be found in this Java runtime.", e);
 		}
 
 		return loaded;
@@ -93,17 +84,16 @@ public class ObjectInterpreter {
 		AnalyzedClass<?> targetClass = definition.getValue().getForeign();
 		// Check in previous if it has already started being unmarshalled
 		Object relationTarget = findIn(previous, targetClass, foreignId);
-		
+
 		if (relationTarget == null) {
 			// Check in the fragments
 			int newTargetIndex = findIndexOfTargetedFragment(resultRow, targetClass, foreignId);
 			if (newTargetIndex != -1)
 				relationTarget = parse(resultRow, targetClass, previous, newTargetIndex);
 		}
-		
+
 		definition.getKey().set(loaded, relationTarget);
 	}
-
 
 	private void sanityCheck(AnalyzedClass<?> analyzed, Iterator<Map.Entry<String, Object>> i) {
 		// First column must always be the class name

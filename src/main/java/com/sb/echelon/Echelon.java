@@ -2,9 +2,11 @@ package com.sb.echelon;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
@@ -21,6 +23,8 @@ import com.sb.echelon.services.ParserRecommander;
 import com.sb.echelon.services.SaveWriter;
 import com.sb.echelon.services.TableWriter;
 import com.sb.echelon.services.TypeRecommander;
+
+import lombok.NonNull;
 
 /**
  * Facade class to interact with the Echelon module.
@@ -73,6 +77,15 @@ public final class Echelon {
 		return (AnalyzedClass<T>) analyzedClasses.get(clazz);
 	}
 
+	/**
+	 * Get a map of all the analyzed classes.
+	 * 
+	 * @return an unmodifiable map of the analyzed classes.
+	 */
+	public Map<Class<?>, AnalyzedClass<?>> getAnalyzedClasses() {
+		return Collections.unmodifiableMap(analyzedClasses);
+	}
+
 	public <T> ColumnParser<T> getParserFor(Class<T> type) {
 		return parserRecommander.getParserFor(type);
 	}
@@ -97,9 +110,8 @@ public final class Echelon {
 	 * @param id    the object's id
 	 * @return the object or null if none was found.
 	 */
-	@SuppressWarnings("unchecked")
 	public <T> T load(Class<T> clazz, long id) {
-		AnalyzedClass<T> analyzed = (AnalyzedClass<T>) analyzedClasses.get(clazz);
+		AnalyzedClass<T> analyzed = (AnalyzedClass<T>) analyze(clazz);
 		if (analyzed == null)
 			analyzed = (AnalyzedClass<T>) analyze(clazz);
 		return loader.load(analyzed, id);
@@ -175,5 +187,22 @@ public final class Echelon {
 
 	protected void writeTable(AnalyzedClass<?> analyzed) {
 		tableWriter.writeTable(analyzed);
+	}
+
+	/**
+	 * Loads the class associated with that name and analyzes it.
+	 * 
+	 * @param className the name of the class acquired using
+	 *                  {@link Class#getName()}.
+	 * @return the analysis of that class.
+	 * @throws ClassNotFoundException 
+	 */
+	public AnalyzedClass<?> analyze(@NonNull String className) throws ClassNotFoundException {
+		// First, try to look through the desired class (this risk causing less runtime exceptions)
+		for (Entry<Class<?>, AnalyzedClass<?>> entry : analyzedClasses.entrySet())
+			if (entry.getClass().getName().equals(className))
+				return entry.getValue();
+		Class<?> clazz = ClassLoader.getSystemClassLoader().loadClass(className);
+		return analyze(clazz);
 	}
 }

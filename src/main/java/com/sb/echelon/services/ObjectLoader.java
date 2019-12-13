@@ -27,7 +27,7 @@ public class ObjectLoader {
 					new Object[] { id }, ResultSetUtil::convertToMapsList);
 			ResultSetUtil.printMapsList(rs);
 			if (rs.size() > 0)
-				return interpreter.parse(rs.get(0)[0], analyzed);
+				return interpreter.parse(rs.get(0), analyzed);
 			else
 				return null;
 		} else {

@@ -19,4 +19,5 @@ public @interface ForeignKey {
 	public static final String SET_DEFAULT = "SET DEFAULT";
 	
 	String onDelete() default RESTRICT;
+	boolean isPolymorphic() default false;
 }
