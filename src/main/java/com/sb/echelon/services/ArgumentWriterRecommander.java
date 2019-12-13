@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 import com.sb.echelon.interpreters.StatementArgumentWriter;
 
 @Component
+@Deprecated
 public class ArgumentWriterRecommander {
 
 	protected HashMap<Class<?>, StatementArgumentWriter<?>> suggestions;

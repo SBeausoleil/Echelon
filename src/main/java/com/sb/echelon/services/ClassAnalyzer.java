@@ -15,6 +15,7 @@ import com.sb.echelon.beans.ColumnDefinition;
 import com.sb.echelon.beans.ColumnDefinition.Primary;
 import com.sb.echelon.exceptions.NoIdFieldException;
 import com.sb.echelon.interpreters.ColumnParser;
+import com.sb.echelon.interpreters.SqlInsertionPreparer;
 import com.sb.echelon.exceptions.EchelonRuntimeException;
 import com.sb.echelon.util.BeanUtil;
 import com.sb.echelon.util.FieldUtil;
@@ -30,6 +31,8 @@ public class ClassAnalyzer {
 	private TypeRecommander typeRecommander;
 	@Autowired
 	private ParserRecommander parserRecommander;
+	@Autowired
+	private InsertionPreparerRecommander preparerRecommander;
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public <T> AnalyzedClass<T> analyze(Class<T> clazz) {
@@ -55,7 +58,8 @@ public class ClassAnalyzer {
 				}
 			}
 			ColumnParser<?> parser = parserRecommander.getParserFor(fields[i].getType());
-			ColumnDefinition definition = new ColumnDefinition(colName, sqlType, fields[i].getType(), parser, foreign);
+			SqlInsertionPreparer<?> preparer = preparerRecommander.getParserFor(fields[i].getType());
+			ColumnDefinition definition = new ColumnDefinition(colName, sqlType, fields[i].getType(), parser, foreign, preparer);
 			if (fields[i] == idField) {
 				definition.setPrimary(primary(idField));
 			}

@@ -18,9 +18,12 @@ public class TestGeneratedIdBean {
 	private long id;
 	
 	private String text;
+	
+	private int randomValue;
 
-	public TestGeneratedIdBean(String text) {
+	public TestGeneratedIdBean(String text, int randomValue) {
 		this.text = text;
+		this.randomValue = randomValue;
 	}
 	
 	
