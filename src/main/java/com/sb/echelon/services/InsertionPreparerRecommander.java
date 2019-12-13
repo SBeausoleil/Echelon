@@ -6,7 +6,6 @@ import org.springframework.stereotype.Component;
 
 import com.sb.echelon.interpreters.ColumnParser;
 import com.sb.echelon.interpreters.CommonPreparers;
-import com.sb.echelon.interpreters.PrimitiveParser;
 import com.sb.echelon.interpreters.SqlInsertionPreparer;
 
 @Component

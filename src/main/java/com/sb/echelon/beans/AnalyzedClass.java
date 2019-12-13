@@ -1,7 +1,6 @@
 package com.sb.echelon.beans;
 
 import java.lang.reflect.Field;
-import java.util.AbstractMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -12,7 +11,6 @@ import com.sb.echelon.exceptions.EchelonRuntimeException;
 import com.sb.echelon.interpreters.PrimitiveParser;
 
 import lombok.AccessLevel;
-import lombok.Data;
 import lombok.Getter;
 import lombok.NonNull;
 
