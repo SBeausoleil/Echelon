@@ -20,6 +20,7 @@ public class App {
 	public App springMain() {
 		TestGeneratedIdBean bean = new TestGeneratedIdBean("Hello world!");
 		echelon.save(bean);
+		bean.setText("A new world awaits us.");
 		echelon.save(bean);
 		return new App();
 	}
