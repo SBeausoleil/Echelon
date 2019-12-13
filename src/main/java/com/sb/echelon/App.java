@@ -54,7 +54,7 @@ public class App {
 		System.out.println(echelon.save(nested));
 		System.out.println(echelon.load(NestedClass.class, nested.getId()));
 
-		var arrays = new ArraysBean(0l, new short[] { 4, 5, 12 }, new Short[] { 99 }, new boolean[] {true, true, false, true});
+		var arrays = new ArraysBean(0l, new short[] { 4, 5, 12 }, new Short[] { 99 }, new boolean[] {true, true, false, true}, new char[] {'l', 'M', 'k', 'H', 'h', '.', 'X' } );
 		System.out.println(echelon.save(arrays));
 		System.out.println(echelon.load(ArraysBean.class, arrays.getId()));
 		

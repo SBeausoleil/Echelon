@@ -95,6 +95,10 @@ public class PrimitiveParser {
 		return (boolean) (val != null ? val : false);
 	}
 
+	public static char[] parseVarcharToCharArray(LinkedHashMap<String, Object> row, String colName) {
+		return ((String) row.get(colName)).toCharArray();
+	}
+	
 	public static Boolean parseBooleanWrapper(LinkedHashMap<String, Object> row, String colName) {
 		return (Boolean) row.get(colName);
 	}

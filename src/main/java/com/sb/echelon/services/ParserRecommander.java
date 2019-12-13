@@ -43,7 +43,7 @@ public class ParserRecommander {
 
 		map.put(byte[].class, PrimitiveParser::parseBlob);
 		map.put(Byte[].class, PrimitiveParser::parseBlob);
-
+		
 		map.put(short[].class, PrimitiveParser::parseShortJson);
 		map.put(Short[].class, PrimitiveParser::parseShortWrapperJson);
 		map.put(int[].class, PrimitiveParser::parseIntJson);
@@ -54,7 +54,7 @@ public class ParserRecommander {
 		map.put(Float[].class, PrimitiveParser::parseFloatWrapperJson);
 		map.put(double[].class, PrimitiveParser::parseDoubleJson);
 		map.put(Double[].class, PrimitiveParser::parseDoubleWrapperJson);
-		map.put(char[].class, PrimitiveParser::parseString);
+		map.put(char[].class, PrimitiveParser::parseVarcharToCharArray);
 		map.put(Character[].class, PrimitiveParser::parseCharacterWrapperJson);
 		map.put(String[].class, PrimitiveParser::parseStringJson);
 		map.put(boolean[].class, PrimitiveParser::parseBooleanJson);

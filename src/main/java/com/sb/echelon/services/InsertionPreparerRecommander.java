@@ -33,7 +33,7 @@ public class InsertionPreparerRecommander {
 		map.put(Float[].class, CommonPreparers::toJson);
 		map.put(double[].class, CommonPreparers::toJson);
 		map.put(Double[].class, CommonPreparers::toJson);
-		map.put(char[].class, CommonPreparers::toJson);
+		map.put(char[].class, CommonPreparers::prepareCharArray);
 		map.put(Character[].class, CommonPreparers::toJson);
 		map.put(String[].class, CommonPreparers::toJson);
 		map.put(boolean[].class, CommonPreparers::toJson);

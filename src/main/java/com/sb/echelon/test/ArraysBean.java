@@ -20,4 +20,6 @@ public class ArraysBean {
 	private Short[] shortWrapperArray;
 	
 	private boolean[] bools;
+	
+	private char[] chars;
 }

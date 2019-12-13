@@ -15,7 +15,7 @@ public class CommonPreparers {
 		CommonPreparers.echelon = echelon;
 	}
 
-	public static Object prepareChar(Object c) {
+	public static String prepareChar(Object c) {
 		char character = (char) c;
 		return new String(new char[] { character });
 	}
@@ -23,6 +23,10 @@ public class CommonPreparers {
 	public static String prepareCharWrapper(Object c) {
 		Character character = (Character) c;
 		return new String(new char[character]);
+	}
+	
+	public static String prepareCharArray(Object c) {
+		return new String((char[]) c);
 	}
 	
 	public static String toJson(Object obj) {
