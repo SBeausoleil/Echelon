@@ -54,7 +54,8 @@ public class TypeRecommander {
 		map.put(char[].class, ColType.VARCHAR.sql);
 		map.put(Character[].class, ColType.VARCHAR.sql);
 		map.put(String[].class, ColType.JSON.sql);
-		
+		map.put(boolean[].class, ColType.JSON.sql);
+		map.put(Boolean[].class, ColType.JSON.sql);
 		return map;
 	}
 

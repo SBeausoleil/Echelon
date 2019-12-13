@@ -45,18 +45,20 @@ public class ParserRecommander {
 		map.put(Byte[].class, PrimitiveParser::parseBlob);
 
 		map.put(short[].class, PrimitiveParser::parseShortJson);
-		map.put(Short[].class, PrimitiveParser::parseShortJson);
+		map.put(Short[].class, PrimitiveParser::parseShortWrapperJson);
 		map.put(int[].class, PrimitiveParser::parseIntJson);
-		map.put(Integer[].class, PrimitiveParser::parseIntJson);
+		map.put(Integer[].class, PrimitiveParser::parseIntWrapperJson);
 		map.put(long[].class, PrimitiveParser::parseLongJson);
-		map.put(Long[].class, PrimitiveParser::parseLongJson);
+		map.put(Long[].class, PrimitiveParser::parseLongWrapperJson);
 		map.put(float[].class, PrimitiveParser::parseFloatJson);
-		map.put(Float[].class, PrimitiveParser::parseFloatJson);
+		map.put(Float[].class, PrimitiveParser::parseFloatWrapperJson);
 		map.put(double[].class, PrimitiveParser::parseDoubleJson);
-		map.put(Double[].class, PrimitiveParser::parseDoubleJson);
+		map.put(Double[].class, PrimitiveParser::parseDoubleWrapperJson);
 		map.put(char[].class, PrimitiveParser::parseString);
-		map.put(Character[].class, PrimitiveParser::parseCharacterJson);
+		map.put(Character[].class, PrimitiveParser::parseCharacterWrapperJson);
 		map.put(String[].class, PrimitiveParser::parseStringJson);
+		map.put(boolean[].class, PrimitiveParser::parseBooleanJson);
+		map.put(Boolean[].class, PrimitiveParser::parseBooleanWrapperJson);
 		return map;
 	}
 

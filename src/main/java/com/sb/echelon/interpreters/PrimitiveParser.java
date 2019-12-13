@@ -1,7 +1,5 @@
 package com.sb.echelon.interpreters;
 
-import java.sql.Array;
-import java.sql.SQLException;
 import java.util.LinkedHashMap;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -107,48 +105,97 @@ public class PrimitiveParser {
 
 	public static short[] parseShortJson(LinkedHashMap<String, Object> row, String colName) {
 		try {
-			return (short[]) ((Array) row.get(colName)).getArray();
-		} catch (SQLException e) {
+			return new ObjectMapper().readValue((String) row.get(colName), short[].class);
+		} catch (JsonProcessingException e) {
+			throw new RuntimeException(e);
+		}
+	}
+	
+	public static Short[] parseShortWrapperJson(LinkedHashMap<String, Object> row, String colName) {
+		try {
+			return new ObjectMapper().readValue((String) row.get(colName), Short[].class);
+		} catch (JsonProcessingException e) {
 			throw new RuntimeException(e);
 		}
 	}
 
 	public static int[] parseIntJson(LinkedHashMap<String, Object> row, String colName) {
 		try {
-			return (int[]) ((Array) row.get(colName)).getArray();
-		} catch (SQLException e) {
+			return new ObjectMapper().readValue((String) row.get(colName), int[].class);
+		} catch (JsonProcessingException e) {
+			throw new RuntimeException(e);
+		}
+	}
+	
+	public static Integer[] parseIntWrapperJson(LinkedHashMap<String, Object> row, String colName) {
+		try {
+			return new ObjectMapper().readValue((String) row.get(colName), Integer[].class);
+		} catch (JsonProcessingException e) {
 			throw new RuntimeException(e);
 		}
 	}
 
 	public static long[] parseLongJson(LinkedHashMap<String, Object> row, String colName) {
 		try {
-			return (long[]) ((Array) row.get(colName)).getArray();
-		} catch (SQLException e) {
+			return new ObjectMapper().readValue((String) row.get(colName), long[].class);
+		} catch (JsonProcessingException e) {
+			throw new RuntimeException(e);
+		}
+	}
+	
+	public static Long[] parseLongWrapperJson(LinkedHashMap<String, Object> row, String colName) {
+		try {
+			return new ObjectMapper().readValue((String) row.get(colName), Long[].class);
+		} catch (JsonProcessingException e) {
 			throw new RuntimeException(e);
 		}
 	}
 
 	public static float[] parseFloatJson(LinkedHashMap<String, Object> row, String colName) {
 		try {
-			return (float[]) ((Array) row.get(colName)).getArray();
-		} catch (SQLException e) {
-			throw new RuntimeException(e);
-		}
-	}
-
-	public static double[] parseDoubleJson(LinkedHashMap<String, Object> row, String colName) {
-		try {
-			return (double[]) ((Array) row.get(colName)).getArray();
-		} catch (SQLException e) {
+			return new ObjectMapper().readValue((String) row.get(colName), float[].class);
+		} catch (JsonProcessingException e) {
 			throw new RuntimeException(e);
 		}
 	}
 	
-	public static Character[] parseCharacterJson(LinkedHashMap<String, Object> row, String colName) {
+	public static Float[] parseFloatWrapperJson(LinkedHashMap<String, Object> row, String colName) {
 		try {
-			return (Character[]) ((Array) row.get(colName)).getArray();
-		} catch (SQLException e) {
+			return new ObjectMapper().readValue((String) row.get(colName), Float[].class);
+		} catch (JsonProcessingException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+
+	public static double[] parseDoubleJson(LinkedHashMap<String, Object> row, String colName) {
+		try {
+			return new ObjectMapper().readValue((String) row.get(colName), double[].class);
+		} catch (JsonProcessingException e) {
+			throw new RuntimeException(e);
+		}
+	}
+	
+	public static Double[] parseDoubleWrapperJson(LinkedHashMap<String, Object> row, String colName) {
+		try {
+			return new ObjectMapper().readValue((String) row.get(colName), Double[].class);
+		} catch (JsonProcessingException e) {
+			throw new RuntimeException(e);
+		}
+	}
+	
+	public static char[] parseCharacterJson(LinkedHashMap<String, Object> row, String colName) {
+		try {
+			return new ObjectMapper().readValue((String) row.get(colName), char[].class);
+		} catch (JsonProcessingException e) {
+			throw new RuntimeException(e);
+		}
+	}
+	
+	public static Character[] parseCharacterWrapperJson(LinkedHashMap<String, Object> row, String colName) {
+		try {
+			return new ObjectMapper().readValue((String) row.get(colName), Character[].class);
+		} catch (JsonProcessingException e) {
 			throw new RuntimeException(e);
 		}
 	}
@@ -156,6 +203,22 @@ public class PrimitiveParser {
 	public static String[] parseStringJson(LinkedHashMap<String, Object> row, String colName) {
 		try {
 			return new ObjectMapper().readValue((String) row.get(colName), String[].class);
+		} catch (JsonProcessingException e) {
+			throw new RuntimeException(e);
+		}
+	}
+	
+	public static boolean[] parseBooleanJson(LinkedHashMap<String, Object> row, String colName) {
+		try {
+			return new ObjectMapper().readValue((String) row.get(colName), boolean[].class);
+		} catch (JsonProcessingException e) {
+			throw new RuntimeException(e);
+		}
+	}
+	
+	public static Boolean[] parseBooleanWrapperJson(LinkedHashMap<String, Object> row, String colName) {
+		try {
+			return new ObjectMapper().readValue((String) row.get(colName), Boolean[].class);
 		} catch (JsonProcessingException e) {
 			throw new RuntimeException(e);
 		}

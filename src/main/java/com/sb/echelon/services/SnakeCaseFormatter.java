@@ -11,7 +11,7 @@ public class SnakeCaseFormatter implements StringFormatter {
 																 // words, so add room for the _
 		char[] chars = str.toCharArray();
 		for (int i = 0; i < chars.length; i++) {
-			if (Character.isUpperCase(chars[i]))
+			if (Character.isUpperCase(chars[i]) && i != 0)
 				res.append('_');
 			res.append(Character.toLowerCase(chars[i]));
 		}
