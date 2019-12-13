@@ -61,7 +61,7 @@ public class ClassAnalyzer {
 				}
 			}
 			ColumnParser<?> parser = parserRecommander.getParserFor(fields[i].getType());
-			SqlInsertionPreparer<?> preparer = foreign == null ? preparerRecommander.getParserFor(fields[i].getType()) : CommonPreparers::toForeignId;
+			SqlInsertionPreparer<?> preparer = foreign == null ? preparerRecommander.getPreparerFor(fields[i].getType()) : CommonPreparers::toForeignId;
 			ColumnDefinition definition = new ColumnDefinition(colName, sqlType, fields[i].getType(), parser, foreign, preparer);
 			if (fields[i] == idField) {
 				definition.setPrimary(primary(idField));

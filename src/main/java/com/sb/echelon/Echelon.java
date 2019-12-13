@@ -13,7 +13,9 @@ import org.springframework.stereotype.Component;
 import com.sb.echelon.beans.AnalyzedClass;
 import com.sb.echelon.exceptions.NoIdFieldException;
 import com.sb.echelon.interpreters.ColumnParser;
+import com.sb.echelon.interpreters.SqlInsertionPreparer;
 import com.sb.echelon.services.ClassAnalyzer;
+import com.sb.echelon.services.InsertionPreparerRecommander;
 import com.sb.echelon.services.ObjectLoader;
 import com.sb.echelon.services.ParserRecommander;
 import com.sb.echelon.services.SaveWriter;
@@ -38,6 +40,8 @@ public final class Echelon {
 	@Autowired
 	private ParserRecommander parserRecommander;
 	@Autowired
+	private InsertionPreparerRecommander preparerRecommander;
+	@Autowired
 	private TableWriter tableWriter;
 	@Autowired
 	private SaveWriter saveWriter;
@@ -45,16 +49,8 @@ public final class Echelon {
 	private ObjectLoader loader;
 
 	private Map<Class<?>, AnalyzedClass<?>> analyzedClasses = new HashMap<>();
+
 	private HashSet<AnalyzedClass<?>> existingTables = new HashSet<>();
-
-	public boolean hasAnalyzed(Class<?> clazz) {
-		return analyzedClasses.containsKey(clazz);
-	}
-
-	@SuppressWarnings("unchecked")
-	public <T> AnalyzedClass<T> getAnalyzed(Class<T> clazz) {
-		return (AnalyzedClass<T>) analyzedClasses.get(clazz);
-	}
 
 	public void analyze(Class<?>... classes) throws NoIdFieldException {
 		for (Class<?> clazz : classes) { analyzedClasses.put(clazz, analyzer.analyze(clazz)); }
@@ -71,6 +67,70 @@ public final class Echelon {
 	}
 
 	@SuppressWarnings("unchecked")
+	public <T> AnalyzedClass<T> getAnalyzed(Class<T> clazz) {
+		return (AnalyzedClass<T>) analyzedClasses.get(clazz);
+	}
+	public <T> ColumnParser<T> getParserFor(Class<T> type) {
+		return parserRecommander.getParserFor(type);
+	}
+	public <T> SqlInsertionPreparer<T> getPreparerFor(Class<T> type) {
+		return preparerRecommander.getPreparerFor(type);
+	}
+
+	public String getSuggestionFor(Class<?> type) {
+		return typeRecommander.getSuggestionFor(type);
+	}
+	public boolean hasAnalyzed(Class<?> clazz) {
+		return analyzedClasses.containsKey(clazz);
+	}
+
+	@SuppressWarnings("unchecked")
+	public <T> T load(Class<T> clazz, long id) {
+		AnalyzedClass<T> analyzed = (AnalyzedClass<T>) analyzedClasses.get(clazz);
+		if (analyzed == null)
+			analyzed = (AnalyzedClass<T>) analyze(clazz);
+		return loader.load(analyzed, id);
+	}
+
+	public <T> ArrayList<T> loadRaw(String sql, Object[] args, Class<T> target) {
+		return loader.loadFromRaw(sql, args, (AnalyzedClass<T>) analyze(target));
+	}
+
+	public <T> ColumnParser<T> putParser(Class<T> type, ColumnParser<T> parser) {
+		return parserRecommander.putParser(type, parser);
+	}
+
+	public <T> ColumnParser<T> putParserIfAbsent(Class<T> type, ColumnParser<T> parser) {
+		return parserRecommander.putParserIfAbsent(type, parser);
+	}
+
+	public <T> SqlInsertionPreparer<T> putPreparer(Class<T> type, SqlInsertionPreparer<T> parser) {
+		return preparerRecommander.putPreparer(type, parser);
+	}
+
+	public <T> SqlInsertionPreparer<T> putPreparerIfAbsent(Class<T> type, SqlInsertionPreparer<T> parser) {
+		return preparerRecommander.putPreparerIfAbsent(type, parser);
+	}
+
+	public String putSuggestion(Class<?> forType, String sqlType) {
+		return typeRecommander.putSuggestion(forType, sqlType);
+	}
+
+	public String putSuggestionIfAbsent(Class<?> forType, String sqlType) {
+		return typeRecommander.putSuggestionIfAbsent(forType, sqlType);
+	}
+
+	public String putTypeSuggestion(Class<?> forType, String sqlType) {
+		return typeRecommander.putSuggestion(forType, sqlType);
+	}
+
+	
+	
+	public String putTypeSuggestionIfAbsent(Class<?> forType, String sqlType) {
+		return typeRecommander.putSuggestionIfAbsent(forType, sqlType);
+	}
+
+	@SuppressWarnings("unchecked")
 	public <T> AnalyzedClass<T> register(AnalyzedClass<T> analyzed) {
 		try {
 			if (!tableWriter.tableExists(analyzed)) {
@@ -84,22 +144,6 @@ public final class Echelon {
 		return (AnalyzedClass<T>) analyzedClasses.put(analyzed.getTargetClass(), analyzed);
 	}
 
-	public String putSuggestion(Class<?> forType, String sqlType) {
-		return typeRecommander.putSuggestion(forType, sqlType);
-	}
-
-	public String putSuggestionIfAbsent(Class<?> forType, String sqlType) {
-		return typeRecommander.putSuggestionIfAbsent(forType, sqlType);
-	}
-
-	public <T> ColumnParser<T> putParser(Class<T> type, ColumnParser<T> parser) {
-		return parserRecommander.putParser(type, parser);
-	}
-
-	public <T> ColumnParser<T> putParserIfAbsent(Class<T> type, ColumnParser<T> parser) {
-		return parserRecommander.putParserIfAbsent(type, parser);
-	}
-
 	@SuppressWarnings("unchecked")
 	public <T> T save(T obj) {
 		AnalyzedClass<T> analyzed = (AnalyzedClass<T>) analyzedClasses.get(obj.getClass());
@@ -107,20 +151,8 @@ public final class Echelon {
 			analyzed = (AnalyzedClass<T>) analyze(obj.getClass());
 		return saveWriter.save(obj, analyzed);
 	}
-
-	@SuppressWarnings("unchecked")
-	public <T> T load(Class<T> clazz, long id) {
-		AnalyzedClass<T> analyzed = (AnalyzedClass<T>) analyzedClasses.get(clazz);
-		if (analyzed == null)
-			analyzed = (AnalyzedClass<T>) analyze(clazz);
-		return loader.load(analyzed, id);
-	}
-
+	
 	protected void writeTable(AnalyzedClass<?> analyzed) {
 		tableWriter.writeTable(analyzed);
-	}
-	
-	public <T> ArrayList<T> loadRaw(String sql, Object[] args, Class<T> target) {
-		return loader.loadFromRaw(sql, args, (AnalyzedClass<T>) analyze(target));
 	}
 }
