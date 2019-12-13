@@ -4,7 +4,6 @@ import java.util.HashMap;
 
 import org.springframework.stereotype.Component;
 
-import com.sb.echelon.interpreters.PrimitiveParser;
 import com.sb.echelon.interpreters.StatementArgumentWriter;
 
 @Component

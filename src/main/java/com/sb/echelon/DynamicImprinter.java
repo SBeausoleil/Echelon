@@ -11,6 +11,7 @@ import com.sb.echelon.exceptions.NoEmptyConstructorException;
 import lombok.Getter;
 
 @Getter
+@Deprecated
 public class DynamicImprinter<T> implements Imprinter<T> {
 
 	private Class<T> managed;

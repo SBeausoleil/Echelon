@@ -22,6 +22,9 @@ public class App {
 		echelon.save(bean);
 		bean.setText("A new world awaits us.");
 		echelon.save(bean);
+		System.out.println(bean);
+		TestGeneratedIdBean loaded = echelon.load(TestGeneratedIdBean.class, bean.getId());
+		System.out.println(loaded);
 		return new App();
 	}
 	
