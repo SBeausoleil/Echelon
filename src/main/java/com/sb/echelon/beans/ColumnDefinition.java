@@ -41,38 +41,27 @@ public class ColumnDefinition<T> {
 
 	@Nullable
 	private SqlInsertionPreparer<T> preparer;
-
+	
 	public ColumnDefinition(@NonNull String name, @NonNull String sqlType, @NonNull Class<T> javaType,
-			@NonNull ColumnParser<T> parser) {
-		this(name, sqlType, javaType, parser, null, null, Primary.NOT_PRIMARY);
+			ColumnParser<T> parser) {
+		this(name, sqlType, javaType, parser, null, Primary.NOT_PRIMARY, false, null);
 	}
 
 	public ColumnDefinition(@NonNull String name, @NonNull String sqlType, @NonNull Class<T> javaType,
-			ColumnParser<T> parser, AnalyzedClass<T> foreign) {
-		this(name, sqlType, javaType, parser, foreign, null, Primary.NOT_PRIMARY);
-	}
-
-	public ColumnDefinition(@NonNull String name, @NonNull String sqlType, @NonNull Class<T> javaType,
-			ColumnParser<T> parser, AnalyzedClass<T> foreign,
+			ColumnParser<T> parser, AnalyzedClass<T> foreign, Primary primary, boolean isPolymorphic,
 			SqlInsertionPreparer<T> preparer) {
-		this(name, sqlType, javaType, parser, foreign, preparer, Primary.NOT_PRIMARY);
-	}
-
-	public ColumnDefinition(@NonNull String name, @NonNull String sqlType, @NonNull Class<T> javaType,
-			ColumnParser<T> parser, AnalyzedClass<T> foreign, SqlInsertionPreparer<T> preparer,
-			Primary primary) {
 		
-		if (parser == null && foreign == null)
-			throw new NullPointerException("parser may only be null for a column with a foreign value");
+		if (parser == null && foreign == null && !isPolymorphic)
+			throw new NullPointerException("parser may only be null for a column with a foreign value or that is polymorphic.");
 		
 		this.name = name;
 		this.sqlType = sqlType;
 		this.javaType = javaType;
 		this.parser = parser;
 		this.foreign = foreign;
-		this.preparer = preparer;
 		this.primary = primary;
-		this.isPolymorphic = false;
+		this.isPolymorphic = isPolymorphic;
+		this.preparer = preparer;
 	}
 
 	public boolean isPrimary() {
@@ -93,9 +82,10 @@ public class ColumnDefinition<T> {
 		this.isPolymorphic = isPolymorphic;
 	}
 	
-	public String polymorphicTypeColName() {
+	public String getPolymorphicTypeColName() {
 		if (isPolymorphic)
 			return name + "_type";
 		return null;
 	}
+
 }

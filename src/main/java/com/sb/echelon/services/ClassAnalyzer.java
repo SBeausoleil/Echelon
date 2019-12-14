@@ -69,13 +69,12 @@ public class ClassAnalyzer {
 			SqlInsertionPreparer<?> preparer = foreign == null && !isPolymorphic
 					? preparerRecommander.getPreparerFor(fields[i].getType())
 					: CommonPreparers::toForeignId;
-			ColumnDefinition definition = new ColumnDefinition(colName, sqlType, fields[i].getType(), parser, foreign,
-					preparer);
-			definition.setPolymorphic(isPolymorphic);
+			
+			Primary primary = Primary.NOT_PRIMARY;
 			if (fields[i] == idField) {
-				definition.setPrimary(primary(idField));
+				primary = checkPrimary(idField);
 			}
-			cols.put(fields[i], definition);
+			cols.put(fields[i], new ColumnDefinition(colName, sqlType, clazz, parser, foreign, primary, isPolymorphic, preparer));
 		}
 
 		return new AnalyzedClass<>(clazz, idField, cols, table);
@@ -86,7 +85,7 @@ public class ClassAnalyzer {
 		return annotation != null && annotation.isPolymorphic();
 	}
 
-	private Primary primary(Field idField) {
+	private Primary checkPrimary(Field idField) {
 		var primary = Primary.PRIMARY;
 		Id annotation = idField.getAnnotation(Id.class);
 		if (annotation != null && annotation.autoGenerate())

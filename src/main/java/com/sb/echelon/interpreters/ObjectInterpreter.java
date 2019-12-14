@@ -44,10 +44,12 @@ public class ObjectInterpreter {
 		try {
 			while (i.hasNext()) {
 				Map.Entry<String, Object> entry = i.next();
-				if (entry.getValue() == null)
+				Map.Entry<Field, ColumnDefinition<?>> definition = analyzed.getFieldsByColName().get(entry.getKey());
+				// Don't lose time with empty fields, they will be null anyway in the bean
+				// If the definition is null, it means that we are dealing with the type info of a polymorphic relation
+				if (entry.getValue() == null || definition == null)
 					continue;
 
-				Map.Entry<Field, ColumnDefinition<?>> definition = analyzed.getFieldsByColName().get(entry.getKey());
 				if (definition.getValue().getParser() != null)
 					definition.getKey().set(loaded,
 							definition.getValue().getParser().parse(rowFragment, entry.getKey()));
@@ -55,11 +57,11 @@ public class ObjectInterpreter {
 					handleForeignRelation(resultRow, previous, loaded, entry, definition);
 				} else if (definition.getValue().isPolymorphic()) {
 					long idForeign = (long) entry.getValue();
-					String type = (String) rowFragment.get(definition.getValue().polymorphicTypeColName());
+					String type = (String) rowFragment.get(definition.getValue().getPolymorphicTypeColName());
 					if (type == null)
 						throw new EchelonRuntimeException("Error: the field " + definition.getKey().getName()
 								+ " is polymorphic, yet there is no identifier for the type of the linked object.");
-					Echelon echelon =  BeanUtil.getBean(Echelon.class);
+					Echelon echelon = BeanUtil.getBean(Echelon.class);
 					AnalyzedClass<?> polymorphicInstance = echelon.analyze(type);
 					definition.getKey().set(loaded, echelon.load(polymorphicInstance.getTargetClass(), idForeign));
 				} else
@@ -70,7 +72,8 @@ public class ObjectInterpreter {
 		} catch (IllegalArgumentException | IllegalAccessException e) {
 			throw new RuntimeException(e);
 		} catch (ClassNotFoundException e) {
-			throw new RuntimeException("The class pointed to by a polymorphic field could not be found in this Java runtime.", e);
+			throw new RuntimeException(
+					"The class pointed to by a polymorphic field could not be found in this Java runtime.", e);
 		}
 
 		return loaded;

@@ -10,6 +10,8 @@ import com.sb.echelon.beans.AnalyzedClass;
 import com.sb.echelon.beans.TestGeneratedIdBean;
 import com.sb.echelon.test.ArraysBean;
 import com.sb.echelon.test.Owner;
+import com.sb.echelon.test.PolymorphA;
+import com.sb.echelon.test.PolymorphicHolder;
 import com.sb.echelon.test.Possessed;
 
 import lombok.AllArgsConstructor;
@@ -63,11 +65,17 @@ public class App {
 		System.out.println(owner.getPossession());
 		System.out.println(echelon.load(Owner.class, owner.getId()));
 		
-		
 		AnalyzedClass<TestGeneratedIdBean> analyzed = (AnalyzedClass<TestGeneratedIdBean>) echelon.getAnalyzed(TestGeneratedIdBean.class);
 		String sql = "SELECT * FROM " + analyzed.getTable() + " WHERE text = ?";
 		TestGeneratedIdBean loadedFromRaw = echelon.loadRaw(sql, new Object[] { TEXT }, TestGeneratedIdBean.class).get(0);
 		System.out.println(loadedFromRaw);
+		
+		PolymorphicHolder polymorphic = new PolymorphicHolder(new PolymorphA());
+		System.out.println(echelon.save(polymorphic));
+		polymorphic.getPoly().foo();
+		PolymorphicHolder loadedPolymorphic = echelon.load(polymorphic.getClass(), polymorphic.getId());
+		System.out.println(loadedPolymorphic);
+		loadedPolymorphic.getPoly().foo();
 	}
 
 	public static void main(String[] args) {

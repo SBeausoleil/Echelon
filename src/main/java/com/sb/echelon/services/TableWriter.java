@@ -51,7 +51,7 @@ public class TableWriter {
 			}
 			
 			if (col.isPolymorphic())
-				builder.append(", " + col.polymorphicTypeColName() + " " + ColType.VARCHAR.sql);
+				builder.append(", " + col.getPolymorphicTypeColName() + " " + ColType.VARCHAR.sql);
 			if (i.hasNext())
 				builder.append(", ");
 		}
