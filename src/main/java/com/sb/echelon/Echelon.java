@@ -116,6 +116,13 @@ public final class Echelon {
 			analyzed = (AnalyzedClass<T>) analyze(clazz);
 		return loader.load(analyzed, id);
 	}
+	
+	public <T> ArrayList<T> load(Class<T> clazz) {
+		AnalyzedClass<T> analyzed = (AnalyzedClass<T>) analyze(clazz);
+		if (analyzed == null)
+			analyzed = (AnalyzedClass<T>) analyze(clazz);
+		return loader.load(analyzed);
+	}
 
 	public <T> ArrayList<T> loadRaw(String sql, Object[] args, Class<T> target) {
 		return loader.loadFromRaw(sql, args, (AnalyzedClass<T>) analyze(target));

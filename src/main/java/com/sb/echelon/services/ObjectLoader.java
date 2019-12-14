@@ -20,26 +20,25 @@ public class ObjectLoader {
 	@Autowired
 	private ObjectInterpreter interpreter;
 
-	public <T> T load(AnalyzedClass<T> analyzed, long id) {
-		if (!analyzed.hasRelations()) {
-			ArrayList<LinkedHashMap<String, Object>[]> rs = jdbc.query(
-					"SELECT * FROM " + analyzed.getTable() + " WHERE `" + analyzed.getIdCol().getName() + "` = ?",
-					new Object[] { id }, ResultSetUtil::convertToMapsList);
-			ResultSetUtil.printMapsList(rs);
-			if (rs.size() > 0)
-				return interpreter.parse(rs.get(0), analyzed);
-			else
-				return null;
-		} else {
-			String sql = makeComplexQuery(analyzed, id);
-			ArrayList<LinkedHashMap<String, Object>[]> rs = jdbc.query(sql, new Object[] { id },
-					ResultSetUtil::convertToMapsList);
-			ResultSetUtil.printMapsList(rs);
-			return interpreter.parse(rs.get(0), analyzed);
-		}
+	public <T> ArrayList<T> load(AnalyzedClass<T> analyzed) {
+		String sql = makeQuery(analyzed, null);
+		ArrayList<LinkedHashMap<String, Object>[]> rs = jdbc.query(sql, ResultSetUtil::convertToMapsList);
+		ResultSetUtil.printMapsList(rs);
+		ArrayList<T> parsed = new ArrayList<>(rs.size());
+		for (LinkedHashMap<String, Object>[] row : rs)
+			parsed.add(interpreter.parse(row, analyzed));
+		return parsed;
 	}
 
-	private String makeComplexQuery(AnalyzedClass<?> analyzed, long id) {
+	public <T> T load(AnalyzedClass<T> analyzed, long id) {
+		String sql = makeQuery(analyzed, id);
+		ArrayList<LinkedHashMap<String, Object>[]> rs = jdbc.query(sql, new Object[] { id },
+				ResultSetUtil::convertToMapsList);
+		ResultSetUtil.printMapsList(rs);
+		return interpreter.parse(rs.get(0), analyzed);
+	}
+
+	private String makeQuery(AnalyzedClass<?> analyzed, Long id) {
 		StringBuilder builder = new StringBuilder("SELECT * FROM " + analyzed.getTable());
 		analyzed.getFields().entrySet().stream()
 				.filter(entry -> entry.getValue().isForeign())
@@ -50,14 +49,14 @@ public class ObjectLoader {
 					builder.append(" ON `" + analyzed.getTable() + "`.`" + col.getName());
 					builder.append("` = `" + alias + "`.`" + col.getForeign().getIdCol().getName() + "`");
 				});
-		builder.append(" WHERE `" + analyzed.getTable() + "`.`" + analyzed.getIdCol().getName() + "` = ?");
+		if (id != null) builder.append(" WHERE `" + analyzed.getTable() + "`.`" + analyzed.getIdCol().getName() + "` = ?");
 		return builder.toString();
 	}
 
 	public <T> ArrayList<T> loadFromRaw(String sql, Object[] args, AnalyzedClass<T> analyzed) {
 		ArrayList<LinkedHashMap<String, Object>[]> rs = jdbc.query(sql, args, ResultSetUtil::convertToMapsList);
 		ResultSetUtil.printMapsList(rs);
-		ArrayList<T> parsed = new ArrayList<>();
+		ArrayList<T> parsed = new ArrayList<>(rs.size());
 		for (LinkedHashMap<String, Object>[] row : rs)
 			parsed.add(interpreter.parse(row, analyzed));
 		return parsed;
